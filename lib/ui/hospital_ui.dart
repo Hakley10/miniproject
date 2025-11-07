@@ -17,11 +17,9 @@ class HospitalUI {
     print('🏥 WELCOME TO HOSPITAL MANAGEMENT SYSTEM');
 
     while (true) {
-      // ✅ Clear console before showing menu
-      stdout.write('\x1B[2J\x1B[0;0H');
-
+      stdout.write('\x1B[2J\x1B[0;0H'); // Clear console
       _showMainMenu();
-      String choice = _getInput('Enter your choice: ');
+      final choice = _getInput('Enter your choice: ');
 
       switch (choice) {
         case '1':
@@ -34,7 +32,7 @@ class HospitalUI {
           _searchPatient();
           break;
         case '4':
-          _addRoom();
+          await _addRoom();
           break;
         case '5':
           _listRooms();
@@ -43,7 +41,7 @@ class HospitalUI {
           await _assignPatientToBed();
           break;
         case '7':
-          _dischargePatient();
+          await _dischargePatient();
           break;
         case '8':
           _viewPatientBedInfo();
@@ -55,56 +53,49 @@ class HospitalUI {
           print('❌ Invalid choice.');
       }
 
-      // ✅ Pause before redisplaying the main menu
       _getInput('\nPress Enter to continue...');
     }
   }
 
   void _showMainMenu() {
     print('''
-=== HOSPITAL MANAGEMENT SYSTEM ===
-1. Register Patient
-2. List Patients
-3. Search Patient
-4. Add Room
-5. List Rooms
-6. Assign Patient to Bed
-7. Discharge Patient
-8. View Patient Bed Info
-9. Exit
-''');
+      === HOSPITAL MANAGEMENT SYSTEM ===
+      1. Register Patient
+      2. List Patients
+      3. Search Patient
+      4. Add Room
+      5. List Rooms
+      6. Assign Patient to Bed
+      7. Discharge Patient
+      8. View Patient Bed Info
+      9. Exit
+      '''
+    );
   }
 
   Future<void> _registerPatient() async {
     print('--- PATIENT REGISTRATION ---');
 
-    String id = _getInput('Enter patient ID: ');
-    final existing = hospitalService.getAllPatients().any((p) => p.id == id);
-    if (existing) {
+    final id = _getInput('Enter patient ID: ');
+    if (hospitalService.getAllPatients().any((p) => p.id == id)) {
       print('❌ Patient ID "$id" already exists!');
       return;
     }
 
-    String name = _getInput('Enter name: ');
-    String gender = _getInput('Enter gender: ');
-    String email = _getInput('Enter email: ');
-    int age = int.tryParse(_getInput('Enter age: ')) ?? 0;
-    String phone = _getInput('Enter phone: ');
-    String address = _getInput('Enter address: ');
+    final name = _getInput('Enter name: ');
+    final gender = _getInput('Enter gender: ');
+    final email = _getInput('Enter email: ');
+    final age = int.tryParse(_getInput('Enter age: ')) ?? 0;
+    final phone = _getInput('Enter phone: ');
+    final address = _getInput('Enter address: ');
 
     print('\n1. Critical  2. Serious  3. Stable');
-    String priorityInput = _getInput('Priority: ');
-    PriorityLevel priority;
-    switch (priorityInput) {
-      case '1':
-        priority = PriorityLevel.critical;
-        break;
-      case '2':
-        priority = PriorityLevel.serious;
-        break;
-      default:
-        priority = PriorityLevel.stable;
-    }
+    final level = _getInput('Priority: ');
+    final priority = switch (level) {
+      '1' => PriorityLevel.critical,
+      '2' => PriorityLevel.serious,
+      _ => PriorityLevel.stable,
+    };
 
     final patient = Patient(
       id: id,
@@ -117,64 +108,54 @@ class HospitalUI {
       priority: priority,
     );
 
-    final message = await hospitalService.registerPatient(patient);
-    print(message);
+    print(await hospitalService.registerPatient(patient));
   }
 
-  Future<void> _assignPatientToBed() async{
-    print('\n--- ASSIGN PATIENT ---');
-    String id = _getInput('Patient ID: ');
-    print(await hospitalService.assignPatientToBed(id));
-  }
-
-  void _dischargePatient() {
-    print('\n--- DISCHARGE ---');
-    String id = _getInput('Patient ID: ');
-    print(hospitalService.dischargePatient(id));
-  }
-
-  void _addRoom() {
+  Future<void> _addRoom() async {
     print('\n--- ADD ROOM ---');
-    String roomNumber = _getInput('Room Number: ');
+    final roomNumber = _getInput('Room Number: ');
     print('1. ICU  2. Ward  3. General  4. Private');
-    String choice = _getInput('Type: ');
-    RoomType type = switch (choice) {
+    final choice = _getInput('Type: ');
+
+    final type = switch (choice) {
       '1' => RoomType.icu,
       '2' => RoomType.ward,
       '3' => RoomType.general,
       '4' => RoomType.private,
       _ => RoomType.general,
     };
-    int capacity = int.tryParse(_getInput('Capacity: ')) ?? 1;
-    print(hospitalService.addRoom(roomNumber, type, capacity));
+
+    final capacity = int.tryParse(_getInput('Capacity: ')) ?? 1;
+    print(await hospitalService.addRoom(roomNumber, type, capacity));
   }
 
   void _listPatients() {
     final list = hospitalService.getAllPatients();
     if (list.isEmpty) {
-      print('No patients.');
+      print('No patients registered.');
       return;
     }
+
     print('\n--- PATIENT LIST ---');
-    for (var p in list) {
+    for (final p in list) {
       print('${p.id} - ${p.name} (${p.priority.name})');
     }
   }
 
   void _searchPatient() {
-    String term = _getInput('Search term: ');
+    final term = _getInput('Search term: ').toLowerCase();
     final results = hospitalService
         .getAllPatients()
         .where((p) =>
-            p.name.toLowerCase().contains(term.toLowerCase()) ||
-            p.id.toLowerCase().contains(term.toLowerCase()))
+            p.name.toLowerCase().contains(term) ||
+            p.id.toLowerCase().contains(term))
         .toList();
 
     if (results.isEmpty) {
-      print('No results.');
+      print('No matching patients found.');
     } else {
       print('\n--- SEARCH RESULTS ---');
-      for (var p in results) {
+      for (final p in results) {
         print('${p.id} - ${p.name}');
       }
     }
@@ -183,18 +164,31 @@ class HospitalUI {
   void _listRooms() {
     final rooms = hospitalService.getAllRooms();
     if (rooms.isEmpty) {
-      print('No rooms.');
+      print('No rooms available.');
       return;
     }
+
     print('\n--- ROOM LIST ---');
-    for (var r in rooms) {
+    for (final r in rooms) {
       print('${r.roomNumber} (${r.type.name}) - ${r.capacity} beds');
     }
   }
 
+  Future<void> _assignPatientToBed() async {
+    print('\n--- ASSIGN PATIENT TO BED ---');
+    final id = _getInput('Patient ID: ');
+    print(await hospitalService.assignPatientToBed(id));
+  }
+
+  Future<void> _dischargePatient() async {
+    print('\n--- DISCHARGE PATIENT ---');
+    final id = _getInput('Patient ID: ');
+    print(await hospitalService.dischargePatient(id));
+  }
+
   void _viewPatientBedInfo() {
     print('\n--- PATIENT BED INFO ---');
-    String id = _getInput('Patient ID: ');
+    final id = _getInput('Patient ID: ');
     print(hospitalService.viewPatientBedInfo(id));
   }
 

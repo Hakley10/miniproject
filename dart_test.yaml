@@ -1,0 +1,3 @@
+# dart_test.yaml
+reporter: compact
+disable_test_output: true

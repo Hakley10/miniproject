@@ -1,14 +1,99 @@
 {
   "rooms": [
     {
-      "roomNumber": "R401",
-      "type": "RoomType.ward",
+      "roomNumber": "1",
+      "type": "RoomType.icu",
       "capacity": 1,
-      "isUnderMaintenance": true,
+      "isUnderMaintenance": false,
       "beds": [
         {
-          "bedId": "R401-A",
-          "roomNumber": "R401",
+          "bedId": "1-A",
+          "roomNumber": "1",
+          "patientId": null
+        }
+      ]
+    },
+    {
+      "roomNumber": "2",
+      "type": "RoomType.ward",
+      "capacity": 1,
+      "isUnderMaintenance": false,
+      "beds": [
+        {
+          "bedId": "2-A",
+          "roomNumber": "2",
+          "patientId": null
+        }
+      ]
+    },
+    {
+      "roomNumber": "3",
+      "type": "RoomType.general",
+      "capacity": 2,
+      "isUnderMaintenance": false,
+      "beds": [
+        {
+          "bedId": "3-A",
+          "roomNumber": "3",
+          "patientId": null
+        },
+        {
+          "bedId": "3-B",
+          "roomNumber": "3",
+          "patientId": null
+        }
+      ]
+    },
+    {
+      "roomNumber": "4",
+      "type": "RoomType.private",
+      "capacity": 1,
+      "isUnderMaintenance": false,
+      "beds": [
+        {
+          "bedId": "4-A",
+          "roomNumber": "4",
+          "patientId": null
+        }
+      ]
+    },
+    {
+      "roomNumber": "5",
+      "type": "RoomType.icu",
+      "capacity": 2,
+      "isUnderMaintenance": false,
+      "beds": [
+        {
+          "bedId": "5-A",
+          "roomNumber": "5",
+          "patientId": null
+        },
+        {
+          "bedId": "5-B",
+          "roomNumber": "5",
+          "patientId": null
+        }
+      ]
+    },
+    {
+      "roomNumber": "6",
+      "type": "RoomType.icu",
+      "capacity": 3,
+      "isUnderMaintenance": false,
+      "beds": [
+        {
+          "bedId": "6-A",
+          "roomNumber": "6",
+          "patientId": null
+        },
+        {
+          "bedId": "6-B",
+          "roomNumber": "6",
+          "patientId": null
+        },
+        {
+          "bedId": "6-C",
+          "roomNumber": "6",
           "patientId": null
         }
       ]

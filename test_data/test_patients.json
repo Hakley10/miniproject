@@ -1,0 +1,16 @@
+{
+  "patients": [
+    {
+      "id": "P004",
+      "name": "Sok",
+      "gender": "M",
+      "email": "sok@example.com",
+      "age": 24,
+      "phone": "0999999999",
+      "address": "Kampot",
+      "priority": "PriorityLevel.serious",
+      "registrationDate": "2025-11-07T19:37:42.615657",
+      "assignedBed": null
+    }
+  ]
+}

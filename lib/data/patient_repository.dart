@@ -12,16 +12,13 @@ class PatientRepository {
   PatientRepository._();
 
   /// Factory to initialize and load data
-  static Future<PatientRepository> create() async {
-    final repo = PatientRepository._();
-
-    // Use a simple directory for CLI (no Flutter dependencies)
-    final dir = Directory.current;
-    repo._dataFile = File(p.join(dir.path, 'patients_data.json'));
-
-    await repo._loadFromFile();
-    return repo;
+  static Future<PatientRepository> create({String? filePath}) async {
+  final repo = PatientRepository._();
+  repo._dataFile = File(filePath ?? p.join(Directory.current.path, 'patients_data.json'));
+  await repo._loadFromFile();
+  return repo;
   }
+
 
   /// Register a new patient and save
   Future<void> registerPatient(Patient patient) async {
