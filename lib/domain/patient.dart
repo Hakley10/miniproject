@@ -48,7 +48,7 @@ class Patient extends Person {
       address: json['address'],
       priority: PriorityLevel.values.firstWhere(
         (e) => e.toString() == json['priority'],
-        orElse: () => PriorityLevel.Stable,
+        orElse: () => PriorityLevel.stable,
       ),
     );
     patient.registrationDate = DateTime.parse(json['registrationDate']);

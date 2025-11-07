@@ -1,3 +1,3 @@
-enum RoomType { ICU, Ward, General, Private }
-enum BedStatus { Available, Occupied, Maintenance }
-enum PriorityLevel { Critical, Serious, Stable }
+enum RoomType { icu, ward, general, private }
+enum BedStatus { available, occupied, maintenance }
+enum PriorityLevel { critical, serious, stable }

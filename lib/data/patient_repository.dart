@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
+
 import '../domain/patient.dart';
-import '../domain/enums.dart'; 
+import '../domain/enums.dart';
 
 class PatientRepository {
   final List<Patient> _patients = [];
@@ -11,64 +11,77 @@ class PatientRepository {
 
   PatientRepository._();
 
-  // Use async factory to initialize file path and load data
+  /// Factory to initialize and load data
   static Future<PatientRepository> create() async {
     final repo = PatientRepository._();
-    final dir = await getApplicationDocumentsDirectory();
+
+    // Use a simple directory for CLI (no Flutter dependencies)
+    final dir = Directory.current;
     repo._dataFile = File(p.join(dir.path, 'patients_data.json'));
+
     await repo._loadFromFile();
     return repo;
   }
 
+  /// Register a new patient and save
   Future<void> registerPatient(Patient patient) async {
     _patients.add(patient);
     await _saveToFile();
-    print('💾 Patient ${patient.name} registered and saved!');
+    print('💾 Patient "${patient.name}" registered successfully!');
   }
 
-  // return nullable Patient safely
+  /// Find a patient by ID (null-safe)
   Patient? findPatientById(String id) {
-    for (final p in _patients) {
-      if (p.id == id) return p;
+    try {
+      return _patients.firstWhere((p) => p.id == id);
+    } catch (_) {
+      return null;
     }
-    return null;
   }
 
-  List<Patient> getAllPatients() => List.from(_patients);
+  /// Get all patients
+  List<Patient> getAllPatients() => List.unmodifiable(_patients);
 
-  // Keep this if PriorityLevel is defined in domain/patient.dart
+  /// Filter patients by priority
   List<Patient> getPatientsByPriority(PriorityLevel priority) {
-    return _patients.where((patient) => patient.priority == priority).toList();
+    return _patients.where((p) => p.priority == priority).toList();
   }
 
+  /// Save to local JSON file
   Future<void> _saveToFile() async {
     try {
-      final data = {
-        'patients': _patients.map((p) => p.toJson()).toList(),
-      };
-      await _dataFile.writeAsString(json.encode(data));
+      final data = {'patients': _patients.map((p) => p.toJson()).toList()};
+      await _dataFile.writeAsString(
+        const JsonEncoder.withIndent('  ').convert(data),
+      );
     } catch (e) {
-      print('❌ Error saving patient data: $e');
+      print('❌ Error saving patient data to ${_dataFile.path}: $e');
     }
   }
 
+  /// Load from local JSON file
   Future<void> _loadFromFile() async {
     try {
-      if (await _dataFile.exists()) {
-        final content = await _dataFile.readAsString();
-        if (content.trim().isEmpty) return;
-        final Map<String, dynamic> data = json.decode(content);
-        final patientsList = data['patients'] as List<dynamic>?;
-        _patients.clear();
-        if (patientsList != null) {
-          for (var patientData in patientsList) {
-            _patients.add(Patient.fromJson(Map<String, dynamic>.from(patientData)));
-          }
-        }
-        print('📁 Loaded ${_patients.length} patients from storage');
+      if (!await _dataFile.exists()) return;
+
+      final content = await _dataFile.readAsString();
+      if (content.trim().isEmpty) return;
+
+      final Map<String, dynamic> data = json.decode(content);
+      final List<dynamic>? patientList = data['patients'] as List<dynamic>?;
+
+      _patients.clear();
+      if (patientList != null) {
+        _patients.addAll(
+          patientList.map(
+            (e) => Patient.fromJson(Map<String, dynamic>.from(e)),
+          ),
+        );
       }
+
+      print('📁 Loaded ${_patients.length} patients from ${_dataFile.path}');
     } catch (e) {
-      print('❌ Error loading patient data: $e');
+      print('❌ Error loading patient data from ${_dataFile.path}: $e');
     }
   }
 }

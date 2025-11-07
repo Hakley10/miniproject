@@ -26,12 +26,12 @@ class Room {
     if (isUnderMaintenance) return false;
     
     switch (priority) {
-      case PriorityLevel.Critical:
-        return type == RoomType.ICU;
-      case PriorityLevel.Serious:
-        return type == RoomType.ICU || type == RoomType.Ward;
-      case PriorityLevel.Stable:
-        return type == RoomType.General || type == RoomType.Private;
+      case PriorityLevel.critical:
+        return type == RoomType.icu;
+      case PriorityLevel.serious:
+        return type == RoomType.icu || type == RoomType.ward;
+      case PriorityLevel.stable:
+        return type == RoomType.general || type == RoomType.private;
     }
   }
   
@@ -54,7 +54,7 @@ class Room {
       roomNumber: json['roomNumber'],
       type: RoomType.values.firstWhere(
         (e) => e.toString() == json['type'],
-        orElse: () => RoomType.General,
+        orElse: () => RoomType.general,
       ),
       capacity: json['capacity'],
     );

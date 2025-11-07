@@ -1,0 +1,17 @@
+{
+  "rooms": [
+    {
+      "roomNumber": "R401",
+      "type": "RoomType.ward",
+      "capacity": 1,
+      "isUnderMaintenance": true,
+      "beds": [
+        {
+          "bedId": "R401-A",
+          "roomNumber": "R401",
+          "patientId": null
+        }
+      ]
+    }
+  ]
+}
